@@ -1,0 +1,98 @@
+- name: Set hostname to {{ hostname }}
+  hostname: name={{ hostname }}
+  when: hostname is defined
+
+
+- name: Set timezone to {{ time_zone }}
+  timezone: name={{ time_zone }}
+  when: time_zone is defined
+
+
+- name: Update all packages
+  package:
+    name: "*"
+    state: latest
+
+
+- name: Install Packages, elrepo repo
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - epel-release
+    - yum-utils
+    - http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+
+
+- name: Enable elrepo-kernel, elrepo-extras
+  ini_file:
+    dest: /etc/yum.repos.d/elrepo.repo
+    section: "{{ item }}"
+    option: enabled
+    value: 1
+  with_items:
+    - elrepo-kernel
+    - elrepo-extras
+
+
+- name: Install core packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - grub2-tools
+    - kernel-lt
+    - yum-cron
+    - python-pip
+    - net-tools
+    - mc
+    - screen
+    - telnet
+    - wget
+    - rsync
+    - tcpdump
+    - iotop
+    - psmisc
+
+
+- block:
+  - name: Allow the 'wheel' group do sudo without a password
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%wheel'
+      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+
+  - name: Add the {{ sudo_user }} user to the whell group
+    user: name={{ sudo_user }} groups=wheel append=yes
+  when: sudo_user is defined
+
+
+- name: Selinux disable
+  selinux: state=disabled
+  when: selinux_disable is defined and selinux_disable == True
+
+
+- name: Activate provided tuned profile
+  shell: tuned-adm profile {{ tuned_profile }}
+  when: tuned_profile is defined and ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
+
+- block:
+  - name: Set 0 kernel as default
+    shell: grub2-set-default 0 && grub2-mkconfig -o /boot/grub2/grub.cfg
+    ignore_errors: true
+
+  - name: Rebooting
+    shell: sleep 2; reboot
+    ignore_errors: true
+    async: 1
+
+  - name: Wait for booting...
+    local_action: wait_for host={{ ansible_ssh_host | default(inventory_hostname) }} port={{ ansible_ssh_port | default(22) }} search_regex=SSH delay=30 timeout=120
+
+  - name: Remove old kernel(s)
+    package:
+      name: "kernel-3*"
+      state: absent
+  when: ansible_kernel | version_compare("4", "<")

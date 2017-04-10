@@ -1,0 +1,7 @@
+time_zone: Europe/Samara
+sudo_user: zzz
+zabbix_server: zabbix-server
+
+ansible_become_user: root
+ansible_become: yes
+ansible_become_method: sudo

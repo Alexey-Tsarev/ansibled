@@ -1,0 +1,4 @@
+- hosts: VDS, Vagrant
+
+  roles:
+    - docker

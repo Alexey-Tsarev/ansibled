@@ -1,0 +1,46 @@
+- name: Uninstall old Docker versions
+  package:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - docker
+    - docker-common
+    - container-selinux
+    - docker-selinux
+    - docker-engine
+
+
+- name: Install Docker repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: 0644
+
+
+- name: Install Docker CE
+  package:
+    name: "docker-ce"
+    state: latest
+
+
+- name: Install docker-compose
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - backports.ssl_match_hostname
+    - docker-compose
+
+
+- name: Create docker config directory
+  file: path=/etc/docker state=directory
+
+
+- name: Copy docker config
+  copy: src=daemon.json dest=/etc/docker
+  notify: Restart and enable docker
+
+
+- name: Add the {{ sudo_user }} user to the docker group
+  user: name={{ sudo_user }} groups=docker append=yes
+  when: sudo_user is defined

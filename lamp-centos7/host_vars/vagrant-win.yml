@@ -1,0 +1,8 @@
+ansible_host: 10.1.1.149
+# ansible_ssh_port: 22
+ansible_ssh_user: vagrant
+ansible_ssh_private_key_file: ../../vagrant/insecure_private_key
+
+hostname: vagrant-win
+tuned_profile: virtual-guest
+# sudo_user: sss
