@@ -44,3 +44,11 @@
 - name: Add the {{ sudo_user }} user to the docker group
   user: name={{ sudo_user }} groups=docker append=yes
   when: sudo_user is defined
+
+
+- name: Set DOCKER_ROOT env variable
+  lineinfile:
+    dest: /etc/environment
+    regexp: '^DOCKER_ROOT='
+    line: 'DOCKER_ROOT={{ docker_root }}'
+  when: docker_root is defined

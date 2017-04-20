@@ -50,6 +50,7 @@
     - telnet
     - wget
     - rsync
+    - sshfs
     - tcpdump
     - iotop
     - psmisc

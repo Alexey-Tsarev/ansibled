@@ -1,0 +1,54 @@
+- name: Install RepoForge
+  package:
+    name: http://repository.it4i.cz/mirrors/repoforge/redhat/el7/en/x86_64/rpmforge/RPMS/rpmforge-release-0.5.3-1.el7.rf.x86_64.rpm
+    state: present
+
+
+- name: Install packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ifstat
+    - iftop
+
+
+- name: Create /root/bin directory
+  file:
+    path: /root/bin
+    state: directory
+    owner: root
+    group: root
+    mode: 0770
+
+
+- name: Copy scripts (root)
+  copy:
+    src: "{{ item }}"
+    dest: /root/bin/
+    owner: root
+    group: root
+    mode: 0770
+  with_fileglob:
+    - root/bin/*
+
+
+- block:
+  - name: Create /home/{{ sudo_user }}/bin
+    file:
+      path: "/home/{{ sudo_user }}/bin"
+      state: directory
+      owner: "{{ sudo_user }}"
+      group: "{{ sudo_user }}"
+      mode: 0770
+
+  - name: Copy scripts ({{ sudo_user }})
+    copy:
+      src: "{{ item }}"
+      dest: "/home/{{ sudo_user }}/bin/"
+      owner: "{{ sudo_user }}"
+      group: "{{ sudo_user }}"
+      mode: 0770
+    with_fileglob:
+      - sudo_user/bin/*
+  when: sudo_user is defined
