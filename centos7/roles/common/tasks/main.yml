@@ -21,7 +21,7 @@
   with_items:
     - epel-release
     - yum-utils
-    - http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
+    - http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
 
 
 - name: Enable elrepo-kernel, elrepo-extras
@@ -57,7 +57,7 @@
 
 
 - block:
-  - name: Allow the 'wheel' group do sudo without a password
+  - name: Allow the 'wheel' group do 'sudo' command without a password
     lineinfile:
       dest: /etc/sudoers
       state: present
