@@ -41,7 +41,6 @@
     state: present
   with_items:
     - grub2-tools
-    - kernel-lt
     - yum-cron
     - python-pip
     - net-tools
@@ -79,13 +78,20 @@
   when: tuned_profile is defined and ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
 
 
+- name: "Install the kernel: '{{ kernel_package }}'"
+  package:
+    name: "{{ kernel_package }}"
+    state: latest
+  when: kernel_package is defined
+
+
 - block:
   - name: Set 0 kernel as default
     shell: grub2-set-default 0 && grub2-mkconfig -o /boot/grub2/grub.cfg
     ignore_errors: true
 
   - name: Rebooting
-    shell: sleep 2; reboot
+    shell: sleep 2; shutdown -r now "Ansible kernel update"
     ignore_errors: true
     async: 1
 

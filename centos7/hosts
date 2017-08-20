@@ -1,4 +1,6 @@
 [VDS]
+rhost
 
 [Vagrant]
-vagrant
+vagrant_lin
+vagrant_win

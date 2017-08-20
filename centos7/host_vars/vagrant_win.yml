@@ -1,0 +1,7 @@
+ansible_host: 10.1.1.154
+ansible_user: vagrant
+ansible_ssh_private_key_file: ../../vagrant/centos7/win/.vagrant/machines/default/virtualbox/private_key
+
+hostname: vagrant-win
+tuned_profile: virtual-guest
+# sudo_user: sss
