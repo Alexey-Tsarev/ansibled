@@ -2,5 +2,5 @@
 rhost
 
 [Vagrant]
-vagrant_lin
-vagrant_win
+vagrant-lin
+vagrant-win

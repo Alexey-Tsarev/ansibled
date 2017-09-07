@@ -46,9 +46,8 @@
   when: sudo_user is defined
 
 
-- name: Set DOCKER_ROOT env variable
-  lineinfile:
-    dest: /etc/environment
-    regexp: '^DOCKER_ROOT='
-    line: 'DOCKER_ROOT={{ docker_root }}'
-  when: docker_root is defined
+- name: Start and enable Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes

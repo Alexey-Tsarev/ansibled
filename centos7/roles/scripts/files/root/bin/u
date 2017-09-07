@@ -1,10 +1,7 @@
 #!/usr/bin/env sh
 
-set -e
+set -x
 
-yum --enablerepo=elrepo-kernel update
-
-package-cleanup --oldkernels --count=1
-
-grub2-set-default 0
-grub2-mkconfig -o /boot/grub2/grub.cfg
+yum update $1
+package-cleanup --oldkernels --count=1 $1
+grub2-set-default 0 && grub2-mkconfig -o /boot/grub2/grub.cfg

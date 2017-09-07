@@ -34,7 +34,7 @@
 
 
 - block:
-  - name: Create /home/{{ sudo_user }}/bin
+  - name: Create directory /home/{{ sudo_user }}/bin
     file:
       path: "/home/{{ sudo_user }}/bin"
       state: directory
@@ -42,7 +42,7 @@
       group: "{{ sudo_user }}"
       mode: 0770
 
-  - name: Copy scripts ({{ sudo_user }})
+  - name: Copy scripts to {{ sudo_user }}
     copy:
       src: "{{ item }}"
       dest: "/home/{{ sudo_user }}/bin/"

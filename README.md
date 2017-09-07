@@ -19,7 +19,7 @@ Put your host(s) configuration in the `centos7/host_vars` directory.
 There is an example for Vagrant host in the `centos7/host_vars/vagrant.yml` file.  
 You may test this playbook using a Vagrant VM (https://atlas.hashicorp.com/centos/boxes/7) and then run the command:
 ~~~
-cd centos7; time ansible-playbook docker.yml -vvvv -i hosts --limit=Vagrant; cd - > /dev/null
+cd centos7; time ansible-playbook docker.yml -i hosts --limit=Vagrant; cd - > /dev/null
 ~~~
 
 
