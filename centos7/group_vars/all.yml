@@ -1,5 +1,5 @@
 time_zone: Europe/Samara
-kernel_package: kernel-ml
+kernel_package: kernel-lt
 sudo_user: zzz
 zabbix_server: zabbix-server
 
