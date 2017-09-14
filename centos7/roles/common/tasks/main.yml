@@ -43,6 +43,7 @@
     - grub2-tools
     - yum-cron
     - python-pip
+    - libselinux-python
     - net-tools
     - mc
     - screen
@@ -74,9 +75,24 @@
   when: selinux_disable is defined and selinux_disable == True
 
 
-- name: Activate provided tuned profile
-  command: tuned-adm profile {{ tuned_profile }}
+- block:
+  - name: Get current tuned profile
+    shell: tuned-adm profile_info | head -n 2 | tail -n 1
+    register: current_tuned_profile
+    changed_when: false
+
+  - name: "Activate tuned profile: '{{ tuned_profile }}' (current tuned profile: '{{ current_tuned_profile.stdout }}')"
+    command: tuned-adm profile {{ tuned_profile }}
+    when: current_tuned_profile is defined and current_tuned_profile.stdout != tuned_profile
   when: tuned_profile is defined and ansible_os_family == "RedHat" and ansible_distribution_major_version == "7"
+
+
+- name: Logrotate with compress
+  lineinfile:
+    dest: /etc/logrotate.conf
+    state: present
+    regexp: '^compress'
+    line: 'compress'
 
 
 - block:
@@ -90,7 +106,7 @@
       msg: "kernel_package_install_status: '{{ kernel_package_install_status }}'"
 
   - block:
-    - name: Set 0 kernel as default
+    - name: Set the 0 kernel as a default
       shell: grub2-set-default 0 && grub2-mkconfig -o /boot/grub2/grub.cfg
       ignore_errors: true
 
@@ -98,9 +114,17 @@
       shell: sleep 2; shutdown -r now "Ansible kernel update"
       ignore_errors: true
       async: 1
+      poll: 0
 
     - name: Wait for booting...
-      local_action: wait_for host={{ ansible_ssh_host | default(inventory_hostname) }} port={{ ansible_ssh_port | default(22) }} search_regex=SSH delay=30 timeout=120
+      wait_for:
+        host: "{{ ansible_ssh_host | default(ansible_host) | default(inventory_hostnameZ) }}"
+        port: "{{ ansible_ssh_port | default(22) }}"
+        search_regex: SSH
+        delay: 1
+      vars:
+        ansible_connection: local
+        ansible_become: false
 
     - name: Remove old kernel(s)
       command: package-cleanup --oldkernels --count=1 -y

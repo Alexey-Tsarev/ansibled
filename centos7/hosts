@@ -1,6 +1,3 @@
-[VDS]
-rhost
-
 [Vagrant]
 vagrant-lin
 vagrant-win

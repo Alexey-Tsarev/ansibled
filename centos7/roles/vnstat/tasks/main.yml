@@ -1,0 +1,29 @@
+- name: Install vnstat package
+  package:
+    name: "vnstat"
+    state: latest
+
+
+- name: "Get interface statistics: '{{ ansible_default_ipv4.interface }}'"
+  shell: vnstat -i {{ ansible_default_ipv4.interface }} 2>&1
+  ignore_errors: true
+  register: vnstat_interface_statistics
+  changed_when: false
+
+
+- name: Create new database for interface
+  shell: vnstat --create -i {{ ansible_default_ipv4.interface }}
+  when: vnstat_interface_statistics is defined and vnstat_interface_statistics.stdout.find('Unable to read database') != -1
+
+
+- name: Get vnstat binary path
+  shell: which vnstat
+  register: vnstat_bin
+  changed_when: false
+
+
+- name: Create cron task
+  cron:
+    name: "vnstat"
+    minute: "*/1"
+    job: "{{ vnstat_bin.stdout }} -u > /dev/null 2>&1"

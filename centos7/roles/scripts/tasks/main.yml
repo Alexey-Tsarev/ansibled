@@ -13,42 +13,47 @@
     - iftop
 
 
-- name: Create /root/bin directory
-  file:
-    path: /root/bin
-    state: directory
-    owner: root
-    group: root
-    mode: 0770
-
-
-- name: Copy scripts (root)
+- name: Copy (root)
   copy:
-    src: "{{ item }}"
-    dest: /root/bin/
+    src: root_root/
+    dest: /root
+    owner: root
+    group: root
+    mode: 0660
+
+
+- name: Copy (root/bin)
+  copy:
+    src: root_bin/
+    dest: /root/bin
     owner: root
     group: root
     mode: 0770
-  with_fileglob:
-    - root/bin/*
+
+
+- lineinfile:
+    path: /root/.bash_profile
+    line: 'if [ -f ~/.profile ]; then . ~/.profile; fi'
 
 
 - block:
-  - name: Create directory /home/{{ sudo_user }}/bin
-    file:
-      path: "/home/{{ sudo_user }}/bin"
-      state: directory
+  - name: Copy (/home/{{ sudo_user }})
+    copy:
+      src: sudo_user_root/
+      dest: /home/{{ sudo_user }}
+      owner: "{{ sudo_user }}"
+      group: "{{ sudo_user }}"
+      mode: 0660
+
+  - name: Copy (/home/{{ sudo_user }}/bin)
+    copy:
+      src: sudo_user_bin/
+      dest: /home/{{ sudo_user }}/bin
       owner: "{{ sudo_user }}"
       group: "{{ sudo_user }}"
       mode: 0770
 
-  - name: Copy scripts to {{ sudo_user }}
-    copy:
-      src: "{{ item }}"
-      dest: "/home/{{ sudo_user }}/bin/"
-      owner: "{{ sudo_user }}"
-      group: "{{ sudo_user }}"
-      mode: 0770
-    with_fileglob:
-      - sudo_user/bin/*
+  - lineinfile:
+      path: /home/{{ sudo_user }}/.bash_profile
+      line: 'if [ -f ~/.profile ]; then . ~/.profile; fi'
   when: sudo_user is defined

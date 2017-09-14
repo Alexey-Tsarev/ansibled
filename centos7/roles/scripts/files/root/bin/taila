@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-tailf /var/log/httpd/access_log
