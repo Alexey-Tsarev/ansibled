@@ -22,13 +22,14 @@
     mode: 0660
 
 
-- name: Copy (root/bin)
-  copy:
+- name: Sync (root/bin)
+  synchronize:
     src: root_bin/
     dest: /root/bin
-    owner: root
-    group: root
-    mode: 0770
+    rsync_opts:
+      - "--chown=root:root"
+      - "--chmod=0770"
+      - "--exclude=.keep"
 
 
 - lineinfile:
@@ -45,13 +46,14 @@
       group: "{{ sudo_user }}"
       mode: 0660
 
-  - name: Copy (/home/{{ sudo_user }}/bin)
-    copy:
+  - name: Sync (/home/{{ sudo_user }}/bin)
+    synchronize:
       src: sudo_user_bin/
       dest: /home/{{ sudo_user }}/bin
-      owner: "{{ sudo_user }}"
-      group: "{{ sudo_user }}"
-      mode: 0770
+      rsync_opts:
+        - "--chown={{ sudo_user }}:{{ sudo_user }}"
+        - "--chmod=0770"
+        - "--exclude=.keep"
 
   - lineinfile:
       path: /home/{{ sudo_user }}/.bash_profile

@@ -14,7 +14,7 @@
     state: latest
 
 
-- name: Install Packages, elrepo repo
+- name: Install Packages; elrepo, gf repos
   package:
     name: "{{ item }}"
     state: present
@@ -22,6 +22,7 @@
     - epel-release
     - yum-utils
     - http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+    - http://mirror.ghettoforge.org/distributions/gf/gf-release-latest.gf.el7.noarch.rpm
 
 
 - name: Enable elrepo-kernel, elrepo-extras
@@ -33,6 +34,26 @@
   with_items:
     - elrepo-kernel
     - elrepo-extras
+
+
+- name: Enable gf-plus
+  ini_file:
+    dest: /etc/yum.repos.d/gf.repo
+    section: gf-plus
+    option: enabled
+    value: 1
+  register: gf_plus_enable_status
+
+
+- debug:
+    msg: "gf_plus_enable_status: '{{ gf_plus_enable_status }}'"
+
+
+- name: Update all packages due to enabled repos
+  package:
+    name: "*"
+    state: latest
+  when: gf_plus_enable_status.changed
 
 
 - name: Install core packages
