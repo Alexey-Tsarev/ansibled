@@ -41,7 +41,7 @@
 
 - name: Add the {{ sudo_user }} user to the docker group
   user: name={{ sudo_user }} groups=docker append=yes
-  when: sudo_user is defined
+  when: sudo_user is defined and sudo_user != None
 
 
 - name: Start and enable Docker

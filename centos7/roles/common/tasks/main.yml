@@ -1,11 +1,11 @@
 - name: Set hostname to {{ hostname }}
   hostname: name={{ hostname }}
-  when: hostname is defined
+  when: hostname is defined and hostname != None
 
 
 - name: Set timezone to {{ time_zone }}
   timezone: name={{ time_zone }}
-  when: time_zone is defined
+  when: time_zone is defined and time_zone != None
 
 
 - name: Update all packages
@@ -88,7 +88,7 @@
 
   - name: Add the {{ sudo_user }} user to the whell group
     user: name={{ sudo_user }} groups=wheel append=yes
-  when: sudo_user is defined
+  when: sudo_user is defined and sudo_user != None
 
 
 - name: Selinux disable
@@ -150,4 +150,4 @@
     - name: Remove old kernel(s)
       command: package-cleanup --oldkernels --count=1 -y
     when: kernel_package_install_status is defined and kernel_package_install_status.changed
-  when: kernel_package is defined
+  when: kernel_package is defined and kernel_package != None

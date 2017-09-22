@@ -35,6 +35,5 @@
         regexp: '^ServerActive='
         line: 'ServerActive={{ zabbix_server }}'
       notify: Restart and enable zabbix-agent
-    when: hostname is defined
-
-  when: zabbix_server is defined
+    when: hostname is defined and hostname != None
+  when: zabbix_server is defined and zabbix_server != None

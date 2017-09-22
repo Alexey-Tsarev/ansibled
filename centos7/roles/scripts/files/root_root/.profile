@@ -1,7 +1,15 @@
+alias l='ls -l'
+alias ll='ls -l'
+alias lh='ls -lh'
+alias llh='ls -lh'
+alias la='ls -a'
+alias lla='ls -la'
+
+alias me='mcedit'
 alias ifs='/usr/bin/ifstat'
 alias ift='iftop -B -P -N'
-alias me='mcedit'
 alias t1='top -d 1'
+
 alias taila='tailf /var/log/httpd/access_log'
 alias tailm='tailf /var/log/messages'
 alias tailn='tailf /var/log/nginx/access.log'

@@ -1,7 +1,10 @@
+alias l='ls -l'
 alias ll='ls -l'
 alias lh='ls -lh'
+alias llh='ls -lh'
+alias la='ls -a'
 alias lla='ls -la'
 
+alias me='mcedit'
 alias s='sudo -i'
 alias scx='screen -x'
-alias me='mcedit'

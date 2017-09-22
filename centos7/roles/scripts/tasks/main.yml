@@ -58,4 +58,4 @@
   - lineinfile:
       path: /home/{{ sudo_user }}/.bash_profile
       line: 'if [ -f ~/.profile ]; then . ~/.profile; fi'
-  when: sudo_user is defined
+  when: sudo_user is defined and sudo_user != None
