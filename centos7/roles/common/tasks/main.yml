@@ -73,6 +73,7 @@
     - rsync
     - zip
     - unzip
+    - deltarpm
     - sshfs
     - tcpdump
     - iotop
