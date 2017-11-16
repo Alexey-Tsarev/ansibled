@@ -6,10 +6,12 @@ alias la='ls -a'
 alias lla='ls -la'
 
 alias me='mcedit'
+
 alias ifs='/usr/bin/ifstat'
 alias ift='iftop -B -P -N'
 alias t1='top -d 1'
 
-alias taila='tailf /var/log/httpd/access_log'
 alias tailm='tailf /var/log/messages'
+alias taila='tailf /var/log/httpd/access_log'
+alias taile='tailf /var/log/httpd/error_log'
 alias tailn='tailf /var/log/nginx/access.log'

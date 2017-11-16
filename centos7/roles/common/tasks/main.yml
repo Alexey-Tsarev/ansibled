@@ -71,6 +71,8 @@
     - telnet
     - wget
     - rsync
+    - zip
+    - unzip
     - sshfs
     - tcpdump
     - iotop
