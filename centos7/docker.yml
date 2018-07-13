@@ -1,4 +1,4 @@
-- hosts: VDS, Vagrant
+- hosts: Vagrant, Localhost
 
   roles:
     - docker
