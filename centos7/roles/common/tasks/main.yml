@@ -135,20 +135,8 @@
       ignore_errors: true
 
     - name: Rebooting
-      shell: sleep 2; shutdown -r now "Ansible kernel update"
-      ignore_errors: true
-      async: 1
-      poll: 0
-
-    - name: Wait for booting...
-      wait_for:
-        host: "{{ ansible_ssh_host | default(ansible_host) | default(inventory_hostnameZ) }}"
-        port: "{{ ansible_ssh_port | default(22) }}"
-        search_regex: SSH
-        delay: 1
-      vars:
-        ansible_connection: local
-        ansible_become: false
+      reboot:
+        msg: Ansible kernel update
 
     - name: Remove old kernel(s)
       command: package-cleanup --oldkernels --count=1 -y

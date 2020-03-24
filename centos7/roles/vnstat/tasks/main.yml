@@ -22,7 +22,7 @@
   changed_when: false
 
 
-- name: Create cron task
+- name: Create cron task for vnstat
   cron:
     name: "vnstat"
     minute: "*/1"

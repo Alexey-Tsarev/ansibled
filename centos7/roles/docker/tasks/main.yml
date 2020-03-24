@@ -20,14 +20,18 @@
     name: "docker-ce"
     state: latest
 
+- name: Install Python 3
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python3
 
 - name: Install docker-compose
   pip:
-    name: "{{ item }}"
+    executable: pip3
+    name: docker-compose
     state: latest
-  with_items:
-    - backports.ssl_match_hostname
-    - docker-compose
 
 
 - name: Create docker config directory

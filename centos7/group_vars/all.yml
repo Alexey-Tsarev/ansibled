@@ -1,4 +1,4 @@
-time_zone: Europe/Samara
+time_zone: Europe/Saratov
 kernel_package: kernel-lt
 sudo_user: zzz
 zabbix_server: zabbix-server
