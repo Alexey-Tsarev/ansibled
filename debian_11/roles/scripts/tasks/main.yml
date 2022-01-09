@@ -1,0 +1,50 @@
+- name: Install packages
+  package:
+    state: present
+    name:
+      - iftop
+      - ifstat
+      - rsync
+      - screen
+
+
+- name: Remove dependencies that are no longer required
+  apt:
+    autoremove: yes
+
+
+- name: Sync to '/root'
+  synchronize:
+    src: root/
+    dest: /root
+    rsync_opts:
+      - "--chown=root:root"
+      - "--chmod=0640"
+      - "--no-perms"
+      - "--exclude=.keep"
+
+
+- name: EXecute bit in '/root/bin'
+  file:
+    path: /root/bin
+    recurse: yes
+    mode: '0750'
+
+
+- block:
+    - name: Sync to '/home/{{ sudo_user }}'
+      synchronize:
+        src: home/sudo/
+        dest: /home/{{ sudo_user }}
+        rsync_opts:
+          - "--chown={{ sudo_user }}:{{ sudo_user }}"
+          - "--chmod=0640"
+          - "--no-perms"
+          - "--exclude=.keep"
+
+    - name: EXecute bit in '/home/{{ sudo_user }}/bin'
+      file:
+        path: /home/{{ sudo_user }}/bin
+        recurse: yes
+        mode: '0750'
+  when: sudo_user is defined and sudo_user != None

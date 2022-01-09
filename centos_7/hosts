@@ -1,6 +1,5 @@
 [Vagrant]
-vagrant-lin
-vagrant-win
+vagrant-vb
 
 [Localhost]
 localhost

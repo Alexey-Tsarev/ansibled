@@ -3,24 +3,33 @@ This repository contains Ansible playbooks for my purposes.
 
 ## Content
 ### Docker host
-In the `centos7` directory there is an Ansible playbooks for preparing host for Docker.  
-I use them for LAMP stack:  
-https://github.com/AlexeySofree/dockered/#lamp  
+In the `debian_11` directory there is an Ansible playbooks for preparing host for Docker.
+I use them for [LAMP stack](https://github.com/AlexeySofree/dockered/#lamp).
 
 Roles in the playbooks:
- - `common`: set hostname, set time zone, update all packages, update kernel to 4.4.x...
+ - `common`: set hostname, set time zone, update all packages
  - `zabbix-agent`: install zabbix-agent, setup server host
  - `docker`: install docker, docker-compose
+ - ...
 
-The `centos7/group_vars/all.yml` file contains main parameters  
+The `debian_11/group_vars/all.yml` file contains main parameters  
 (change the `zabbix_server` value or comment if you don't use Zabbix).  
-Put your host(s) configuration in the `centos7/host_vars` directory.
+Put your host(s) configuration in the `debian_11/host_vars` directory.
 
-There is an example for Vagrant host in the `centos7/host_vars/vagrant.yml` file.  
-You may test this playbook using a Vagrant VM (https://atlas.hashicorp.com/centos/boxes/7) and then run the command:
-~~~
-cd centos7 ; time ansible-playbook docker.yml -i hosts --limit=vagrant-win ; cd - > /dev/null
-~~~
+There is an example for Vagrant host in the `debian_11/host_vars/vagrant-vb.yml` file.  
+You may test this playbook using a Vagrant VM:
+https://app.vagrantup.com/debian/boxes/bullseye64
+```
+cd debian_11
+```
+```
+time ansible-playbook -i vagrant-vb, -vv all.yml
+```
+or limit "all" by a role/tag.
+For instance, the `common` role only and to override `zabbix_server`:
+```
+time ansible-playbook -i vagrant-vb, -e zabbix_server=10.1.1.1 --tags "common" -vv all.yml
+```
 
 
 ---

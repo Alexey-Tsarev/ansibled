@@ -1,0 +1,11 @@
+- name: Install 'vnstat' package
+  package:
+    name: "vnstat"
+    state: latest
+
+
+- name: Start and enable 'vnstat'
+  service:
+    name: vnstat
+    state: started
+    enabled: yes

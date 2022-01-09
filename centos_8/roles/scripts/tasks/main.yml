@@ -1,0 +1,52 @@
+- name: Install packages
+  package:
+    state: present
+    name:
+    - iftop
+
+
+- name: Copy (root)
+  copy:
+    src: root_root/
+    dest: /root
+    owner: root
+    group: root
+    mode: 0660
+
+
+- name: Sync (root/bin)
+  synchronize:
+    src: root_bin/
+    dest: /root/bin
+    rsync_opts:
+      - "--chown=root:root"
+      - "--chmod=0770"
+
+
+- lineinfile:
+    path: /root/.bash_profile
+    line: 'if [ -f ~/.profile ]; then . ~/.profile; fi'
+
+
+- block:
+  - name: Copy (/home/{{ sudo_user }})
+    copy:
+      src: sudo_user_root/
+      dest: /home/{{ sudo_user }}
+      owner: "{{ sudo_user }}"
+      group: "{{ sudo_user }}"
+      mode: 0660
+
+  - name: Sync (/home/{{ sudo_user }}/bin)
+    synchronize:
+      src: sudo_user_bin/
+      dest: /home/{{ sudo_user }}/bin
+      rsync_opts:
+        - "--chown={{ sudo_user }}:{{ sudo_user }}"
+        - "--chmod=0770"
+        - "--exclude=.keep"
+
+  - lineinfile:
+      path: /home/{{ sudo_user }}/.bash_profile
+      line: 'if [ -f ~/.profile ]; then . ~/.profile; fi'
+  when: sudo_user is defined and sudo_user != None

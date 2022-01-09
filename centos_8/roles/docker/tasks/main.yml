@@ -1,31 +1,39 @@
 - name: Uninstall old Docker versions
   package:
-    name: "{{ item }}"
     state: absent
-  with_items:
+    name:
     - docker
+    - docker-client
+    - docker-client-latest
     - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
     - docker-engine
 
 
 - name: Install Docker repo
   get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
+      url: https://download.docker.com/linux/centos/docker-ce.repo
     dest: /etc/yum.repos.d/docker-ce.repo
     mode: 0644
 
 
+# https://vexpose.blog/2020/04/02/installation-of-docker-fails-on-centos-8-with-error-package-containerd-io-1-2-10-3-2-el7-x86-64-is-excluded/
+- name: Install containerd.io
+  package:
+    state: latest
+    name:
+      - https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+
+
 - name: Install Docker CE
   package:
-    name: "docker-ce"
     state: latest
+    name:
+      - docker-ce
+      - docker-ce-cli
 
-- name: Install Python 3
-  package:
-    name: "{{ item }}"
-    state: present
-  with_items:
-    - python3
 
 - name: Install docker-compose
   pip:
@@ -34,12 +42,8 @@
     state: latest
 
 
-- name: Create docker config directory
-  file: path=/etc/docker state=directory
-
-
 - name: Copy docker config
-  copy: src=daemon.json dest=/etc/docker
+  copy: src=daemon.json.j2.bak dest=/etc/docker
   notify: Restart and enable docker
 
 

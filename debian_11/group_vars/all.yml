@@ -1,0 +1,13 @@
+ansible_become: yes
+ansible_become_method: sudo
+ansible_become_user: root
+
+tuned_profile: virtual-guest
+time_zone: Europe/Saratov
+sudo_user: zzz
+docker_iptables: 'false'
+zabbix_server: zabbix-server
+
+swap_file_size_mb: 1024 # 0 - disable
+swap_file_path: /swapfile
+swappiness: 5

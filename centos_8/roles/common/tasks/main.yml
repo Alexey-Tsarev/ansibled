@@ -1,0 +1,117 @@
+- name: Set hostname to {{ hostname }}
+  hostname: name={{ hostname }}
+  when: hostname is defined and hostname != None
+
+
+- name: Set timezone to {{ time_zone }}
+  timezone: name={{ time_zone }}
+  when: time_zone is defined and time_zone != None
+
+
+- name: Update all packages
+  package:
+    name: "*"
+    state: latest
+
+
+- name: Install epel, elrepo
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - epel-release
+    - https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
+
+
+- name: Enable elrepo-extras
+  ini_file:
+    dest: /etc/yum.repos.d/elrepo.repo
+    section: "{{ item }}"
+    option: enabled
+    value: "1"
+  with_items:
+    - elrepo-extras
+
+
+- name: Enable PowerTools
+  ini_file:
+    dest: /etc/yum.repos.d/CentOS-PowerTools.repo
+    section: "{{ item }}"
+    option: enabled
+    value: "1"
+  with_items:
+    - PowerTools
+
+
+- name: Update all packages due to enabled repos
+  package:
+    state: latest
+    name: "*"
+
+
+- name: Install core packages
+  package:
+    state: present
+    name:
+      - grub2-tools
+      - yum-utils
+      - python3-pip
+      - net-tools
+      - mc
+      - screen
+      - telnet
+      - wget
+      - rsync
+      - zip
+      - unzip
+      - drpm
+      - fuse-sshfs
+      - tcpdump
+      - iotop
+      - git
+
+
+- block:
+  - name: Allow the 'wheel' group do 'sudo' command without a password
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%wheel'
+      line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+
+  - name: Add the {{ sudo_user }} user to the whell group
+    user: name={{ sudo_user }} groups=wheel append=yes
+  when: sudo_user is defined and sudo_user != None
+
+
+- name: Selinux disable
+  selinux: state=disabled
+  when: selinux_disable is defined and selinux_disable == True
+
+
+- block:
+  - name: Get current tuned profile
+    shell: tuned-adm profile_info | head -n 2 | tail -n 1
+    register: current_tuned_profile
+    changed_when: false
+
+  - debug:
+      msg: "Current tuned profile: '{{ current_tuned_profile.stdout }}'"
+
+  - name: "Activate tuned profile: '{{ tuned_profile }}'"
+    command: tuned-adm profile {{ tuned_profile }}
+    when: current_tuned_profile is defined and current_tuned_profile.stdout != tuned_profile
+  when: tuned_profile is defined and ansible_os_family == "RedHat" and ansible_distribution_major_version == "8"
+
+
+- name: Logrotate with compress
+  lineinfile:
+    dest: /etc/logrotate.conf
+    state: present
+    regexp: '^compress'
+    line: 'compress'
+  register: logrotate_conf_changed_status
+
+
+- debug:
+    msg: "logrotate_conf_changed_status: '{{ logrotate_conf_changed_status }}'"

@@ -1,0 +1,6 @@
+- hosts: all
+
+  roles:
+    - docker
+    - vnstat
+    - scripts
