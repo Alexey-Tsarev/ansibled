@@ -16,17 +16,15 @@ The `debian_11/group_vars/all.yml` file contains main parameters
 (change the `zabbix_server` value or comment if you don't use Zabbix).  
 Put your host(s) configuration in the `debian_11/host_vars` directory.
 
-There is an example for Vagrant host in the `debian_11/host_vars/vagrant-vb.yml` file.  
-You may test this playbook using a Vagrant VM:
-https://app.vagrantup.com/debian/boxes/bullseye64
+There is an example of a Vagrant host in the `debian_11/host_vars/vagrant-vb.yml` file.  
+You may test this playbook using a Vagrant VM.
+The latest I used is [Debian 11](https://app.vagrantup.com/debian/boxes/bullseye64).
 ```
 cd debian_11
-```
-```
 time ansible-playbook -i vagrant-vb, -vv all.yml
 ```
 or limit "all" by a role/tag.
-For instance, the `common` role only and to override `zabbix_server`:
+For instance, apply the `common` role only and override `zabbix_server`:
 ```
 time ansible-playbook -i vagrant-vb, -e zabbix_server=10.1.1.1 --tags "common" -vv all.yml
 ```
