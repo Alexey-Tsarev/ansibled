@@ -35,6 +35,12 @@
     filename: docker
 
 
+- name: Copy bullseye-backports.list
+  ansible.builtin.copy:
+    src=files/bullseye-backports.list
+    dest=/etc/apt/sources.list.d/
+
+
 - name: apt update
   apt:
     update_cache: yes
@@ -47,6 +53,14 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
+
+
+- name: Install docker-compose from bullseye-backports
+  apt:
+    default_release: bullseye-backports
+    state: latest
+    update_cache: yes
+    name:
       - docker-compose
 
 

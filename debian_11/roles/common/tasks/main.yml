@@ -1,8 +1,9 @@
 - block:
-    - name: Set hostname to '{{ hostname }}'
-      hostname:
-        name: "{{ hostname }}"
-        use: debian
+# https://github.com/ansible/ansible/pull/76125
+#    - name: Set hostname to '{{ hostname }}'
+#      hostname:
+#        name: "{{ hostname }}"
+#        use: debian
 
     - name: Replace ipv4 localhost in '/etc/hosts'
       replace:
@@ -38,22 +39,24 @@
   package:
     state: present
     name:
-      - tuned-utils
-      - ntp
-      - mc
-      - screen
-      - telnet
       - curl
-      - wget
-      - rsync
-      - zip
-      - unzip
-      - tcpdump
-      - iotop
-      - ifstat
-      - util-linux
       - git
-
+      - ifstat
+      - iotop
+      - mc
+      - mtr
+      - net-tools
+      - ntp
+      - rsync
+      - screen
+      - sudo
+      - tcpdump
+      - telnet
+      - tuned-utils
+      - unzip
+      - util-linux
+      - wget
+      - zip
 
 - block:
     - name: Allow 'sudo' group do 'sudo' command without a password
@@ -165,3 +168,29 @@
 
 - debug:
     msg: "logrotate_conf_dateext_changed_status: '{{ logrotate_conf_dateext_changed_status }}'"
+
+
+- name: force_color_prompt=yes in .bashrc for {{ ansible_user }}
+  lineinfile:
+    dest: ${HOME}/.bashrc
+    state: present
+    regexp: "^#force_color_prompt=yes"
+    line: "force_color_prompt=yes"
+  register: force_color_prompt_changed_status_ansible_user
+
+
+- debug:
+    msg: "force_color_prompt_changed_status_ansible_user: 'force_color_prompt_changed_status_ansible_user'"
+
+
+- name: force_color_prompt=yes in .bashrc for {{ sudo_user }}
+  lineinfile:
+    dest: /home/{{ sudo_user }}/.bashrc
+    state: present
+    regexp: "^#force_color_prompt=yes"
+    line: "force_color_prompt=yes"
+  register: force_color_prompt_changed_status_sudo_user
+
+
+- debug:
+    msg: "force_color_prompt_changed_status_sudo_user: 'force_color_prompt_changed_status_sudo_user'"

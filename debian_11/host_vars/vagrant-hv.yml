@@ -1,11 +1,11 @@
-ansible_host: 10.1.1.102
+ansible_host: 10.1.1.101
 
 ansible_port: 22
 ansible_user: vagrant
 
 ansible_ssh_private_key_file: ~/.ssh/id_rsa
 
-hostname: vagrant-vb
+hostname: vagrant-hv
 tuned_profile: virtual-guest
 sudo_user: vagrant
 docker_iptables: 'true'

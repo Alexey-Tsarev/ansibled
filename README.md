@@ -21,12 +21,12 @@ You may test this playbook using a Vagrant VM.
 The latest I used is [Debian 11](https://app.vagrantup.com/debian/boxes/bullseye64).
 ```
 cd debian_11
-time ansible-playbook -i vagrant-vb, -vv all.yml
+time ansible-playbook -i vagrant-hv, -vv all.yml
 ```
 or limit "all" by a role/tag.
 For instance, apply the `common` role only and override `zabbix_server`:
 ```
-time ansible-playbook -i vagrant-vb, -e zabbix_server=10.1.1.1 --tags "common" -vv all.yml
+time ansible-playbook -i vagrant-hv, -e zabbix_server=10.1.1.1 --tags "common" -vv all.yml
 ```
 
 
