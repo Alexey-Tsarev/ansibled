@@ -1,9 +1,7 @@
 - block:
-# https://github.com/ansible/ansible/pull/76125
-#    - name: Set hostname to '{{ hostname }}'
-#      hostname:
-#        name: "{{ hostname }}"
-#        use: debian
+    - name: Set hostname to '{{ hostname }}'
+      hostname:
+        name: "{{ hostname }}"
 
     - name: Replace ipv4 localhost in '/etc/hosts'
       replace:
@@ -47,6 +45,7 @@
       - mtr
       - net-tools
       - ntp
+      - psmisc
       - rsync
       - screen
       - sudo
