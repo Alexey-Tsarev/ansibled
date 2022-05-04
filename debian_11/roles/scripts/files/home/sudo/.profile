@@ -17,3 +17,6 @@ if [ -n "$BASH_VERSION" ]; then
         . "$HOME/.bashrc"
     fi
 fi
+
+alias m="mc"
+alias me="mcedit"

@@ -26,6 +26,7 @@ time ansible-playbook -i vagrant-hv, -vv all.yml
 or limit "all" by a role/tag.
 For instance, apply the `common` role only and override `zabbix_server`:
 ```
+cd debian_11
 time ansible-playbook -i vagrant-hv, -e zabbix_server=10.1.1.1 --tags "common" -vv all.yml
 ```
 
