@@ -20,3 +20,6 @@ fi
 
 alias m="mc"
 alias me="mcedit"
+alias ll="ls -l"
+alias la="ls -la"
+alias l="ll"
