@@ -18,6 +18,7 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
+alias mc='. /usr/lib/mc/mc-wrapper.sh'
 alias m="mc"
 alias me="mcedit"
 alias ll="ls -l"

@@ -41,6 +41,7 @@
       - git
       - ifstat
       - iotop
+      - locales-all
       - mc
       - mtr
       - net-tools
