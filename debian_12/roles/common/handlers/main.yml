@@ -1,0 +1,5 @@
+- name: Rebuild locales database
+  command: "{{ item }}"
+  with_items:
+    #- dpkg-reconfigure locales -f noninteractive
+    - locale-gen

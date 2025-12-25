@@ -1,0 +1,13 @@
+- hosts: all
+
+  roles:
+    - role: common
+      tags: common
+    - role: deploy-tool
+      tags: deploy-tool
+    - role: docker
+      tags: docker
+    - role: scripts
+      tags: scripts
+    - role: zabbix-agent
+      tags: zabbix-agent

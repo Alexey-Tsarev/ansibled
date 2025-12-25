@@ -11,14 +11,13 @@ if [ -d "${HOME}/.local/bin" ]; then
 fi
 
 # if running bash
-if [ -n "$BASH_VERSION" ]; then
-    # include .bashrc if it exists
-    if [ -f "$HOME/.bashrc" ]; then
-        . "$HOME/.bashrc"
+if [ -n "${BASH_VERSION}" ]; then
+    if [ -f "${HOME}/.bashrc" ]; then
+        . "${HOME}/.bashrc"
     fi
 fi
 
-alias mc='. /usr/lib/mc/mc-wrapper.sh'
+alias mc=". /usr/lib/mc/mc-wrapper.sh"
 alias m="mc"
 alias me="mcedit"
 alias ll="ls -l"

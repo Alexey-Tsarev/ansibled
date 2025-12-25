@@ -47,6 +47,7 @@
       - net-tools
       - ntp
       - psmisc
+      - python3-pip
       - rsync
       - screen
       - sudo
@@ -55,8 +56,17 @@
       - tuned-utils
       - unzip
       - util-linux
+      - vnstat
       - wget
       - zip
+
+
+- name: Start and enable 'vnstat'
+  service:
+    name: vnstat
+    state: started
+    enabled: yes
+
 
 - block:
     - name: Allow 'sudo' group do 'sudo' command without a password
@@ -78,7 +88,32 @@
       file:
         path: /home/{{ sudo_user }}
         mode: '0750'
+
+    - block:
+        - name: "Set authorized_key from file: '{{ sudo_user_copy_ssh_pub_key }}'"
+          authorized_key:
+            user: "{{ sudo_user }}"
+            state: present
+            key: "{{ lookup('file', '{{ sudo_user_copy_ssh_pub_key }}') }}"
+      when: sudo_user_copy_ssh_pub_key is defined and sudo_user_copy_ssh_pub_key != None
   when: sudo_user is defined and sudo_user != None
+
+
+- name: Change /etc/locale.gen
+  lineinfile:
+    dest: /etc/locale.gen
+    state: present
+    regexp: "^# {{ item }}"
+    line: "{{ item }}"
+  loop: "{{ locales_to_be_generated }}"
+  notify: Rebuild locales database
+
+
+- name: Change /etc/environment
+  lineinfile:
+    dest: /etc/environment
+    state: present
+    line: "LC_ALL={{ locale_default }}"
 
 
 - name: Selinux disable

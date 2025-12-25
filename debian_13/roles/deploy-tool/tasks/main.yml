@@ -1,0 +1,94 @@
+- block:
+    - name: Install AWS CLI
+      package:
+        state: latest
+        name:
+          - awscli
+  when: deploy_tool_aws_enabled
+
+
+- block:
+    - name: Check if Terragrunt is present with the needed version
+      command: "{{ bin_dir }}/terragrunt -version"
+      register: terragrunt_installed_version
+      ignore_errors: yes
+      changed_when: false
+      failed_when: false
+
+    - debug:
+        msg: "Terragrunt installed version: {{ terragrunt_installed_version }}"
+
+    - block:
+        - block:
+            - name: Find latest version of Terragrunt
+              uri:
+                url: https://api.github.com/repos/gruntwork-io/terragrunt/releases/latest
+                return_content: yes
+              register: terragrunt_latest
+
+            - debug:
+                msg: "Terragrunt latest version: {{ terragrunt_latest }}"
+
+            - name: Set terragrunt_version_to_install when version is latest
+              set_fact:
+                terragrunt_version_to_install: "{{ (terragrunt_latest.content | from_json).name }}"
+          when: deploy_tool_terragrunt_version == "latest"
+
+        - name: Use the specified Terragrunt version when version is not latest
+          set_fact:
+            terragrunt_version_to_install: "{{ deploy_tool_terragrunt_version }}"
+          when: deploy_tool_terragrunt_version != "latest"
+
+        - block:
+            - name: Install Terragrunt {{ terragrunt_version_to_install }}
+              get_url:
+                url: "https://github.com/gruntwork-io/terragrunt/releases/download/{{ terragrunt_version_to_install }}/terragrunt_{{ ansible_system | lower }}_{{ base_arch[ansible_architecture] | default('amd64') }}"
+                dest: "{{ bin_dir }}/terragrunt"
+                mode: "0755"
+                force: "yes"
+          when: terragrunt_version_to_install not in (terragrunt_installed_version.stdout_lines | default(['empty'], true) | first)
+      when: deploy_tool_terragrunt_version not in ( terragrunt_installed_version.stdout_lines | default(['empty'], true) | first )
+  when: deploy_tool_terragrunt_enabled
+
+
+- block:
+    - name: Check if Terraform is present with the needed version
+      command: "{{ bin_dir }}/terraform -version"
+      register: terraform_installed_version
+      ignore_errors: yes
+      changed_when: false
+      failed_when: false
+
+    - debug:
+        msg: "Terraform installed version: {{ terraform_installed_version }}"
+
+    - block:
+        - block:
+            - name: Find latest version of Terraform
+              uri:
+                url: https://checkpoint-api.hashicorp.com/v1/check/terraform
+                return_content: yes
+              register: terraform_checkpoint
+
+            - debug:
+                msg: "Terraform checkpoint: {{ terraform_checkpoint }}"
+
+            - name: Set terraform_version_to_install when version is latest
+              set_fact:
+                terraform_version_to_install: "{{ (terraform_checkpoint.content | from_json).current_version }}"
+          when: deploy_tool_terraform_version == "latest"
+
+        - name: Use the specified Terraform version when version is not latest
+          set_fact:
+            terraform_version_to_install: "{{ deploy_tool_terraform_version }}"
+          when: deploy_tool_terraform_version != "latest"
+
+        - block:
+            - name: Install Terraform {{ terraform_version_to_install }}
+              unarchive:
+                src: "https://releases.hashicorp.com/terraform/{{ terraform_version_to_install }}/terraform_{{ terraform_version_to_install }}_{{ ansible_system | lower }}_{{ base_arch[ansible_architecture] | default('amd64') }}.zip"
+                dest: "{{ bin_dir }}"
+                remote_src: yes
+          when: terraform_version_to_install not in (terraform_installed_version.stdout_lines | default(['empty'], true) | first)
+      when: deploy_tool_terraform_version not in (terraform_installed_version.stdout_lines | default(['empty'], true) | first)
+  when: deploy_tool_terraform_enabled

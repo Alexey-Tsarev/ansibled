@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -x
+
+apt update
+apt upgrade $1
+apt dist-upgrade $1
+apt autoremove $1
+apt clean

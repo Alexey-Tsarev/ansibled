@@ -1,0 +1,10 @@
+ansible_python_interpreter: python3
+
+ansible_host: 10.1.7.163
+ansible_port: 22
+ansible_user: sofree
+
+ansible_ssh_private_key_file: ~/.ssh/id_rsa
+
+hostname: builder.home.lan
+sudo_user: sofree

@@ -1,0 +1,72 @@
+# https://docs.docker.com/engine/install/debian/
+
+- name: Uninstall old Docker versions
+  package:
+    state: absent
+    name:
+      - containerd
+      - docker-compose
+      - docker-doc
+      - docker.io
+      - podman-docker
+      - runc
+
+
+- name: Set up repository
+  package:
+    state: latest
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+
+- name: Download Docker's official GPG key
+  get_url:
+    url: https://download.docker.com/linux/debian/gpg
+    dest: /etc/apt/keyrings/docker.gpg
+    mode: '0644'
+
+
+- name: Add Docker APT repository
+  deb822_repository:
+    name: docker
+    types: [deb]
+    uris:
+      - https://download.docker.com/linux/debian
+    suites:
+      - "{{ ansible_distribution_release }}"
+    components:
+      - stable
+    signed_by: /etc/apt/keyrings/docker.gpg
+    state: present
+
+
+- name: apt update
+  apt:
+    update_cache: yes
+
+
+- name: Install Docker
+  package:
+    state: latest
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+
+
+- name: Add the {{ sudo_user }} user to the 'docker' group
+  user: name={{ sudo_user }} groups=docker append=yes
+  when: sudo_user is defined and sudo_user != None
+
+
+#- name: Copy Docker config and notify restart Docker
+#  ansible.builtin.template:
+#    src=files/daemon.json.j2
+#    dest=/etc/docker/daemon.json
+#  notify: Restart Docker
