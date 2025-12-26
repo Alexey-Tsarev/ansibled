@@ -21,6 +21,7 @@ swap_file_path: /swapfile
 swappiness: 5
 
 bin_dir: /usr/local/bin
+opt_dir: /opt
 
 deploy_tool_aws_enabled: True
 
@@ -31,3 +32,11 @@ deploy_tool_terragrunt_version: latest
 deploy_tool_terraform_enabled: True
 deploy_tool_terraform_version: latest
 #deploy_tool_terraform_version: 1.1.4
+
+hiddify_cli_enabled: True
+hiddify_cli_version: latest
+#hiddify_cli_version: v3.2.0
+hiddify_cli_version_suffix: ""
+#hiddify_cli_version_suffix: "-v3"
+hiddify_cli_conf_file: /root/hiddify.conf
+hiddify_cli_opt: run --tun -c $CONF

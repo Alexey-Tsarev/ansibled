@@ -1,0 +1,15 @@
+[Unit]
+Description=Hiddify CLI Service
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile={{ hiddify_cli_conf_file }}
+ExecStart={{ bin_dir }}/HiddifyCli {{ hiddify_cli_opt }}
+Restart=on-failure
+User=root
+WorkingDirectory=/root
+
+[Install]
+WantedBy=multi-user.target
+

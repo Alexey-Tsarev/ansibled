@@ -1,0 +1,109 @@
+- block:
+    - debug:
+        msg: "hiddify_cli_version: {{ hiddify_cli_version }}"
+
+    - block:
+        - name: Find Hiddify Cli latest version
+          uri:
+            url: https://api.github.com/repos/hiddify/hiddify-core/releases/latest
+            return_content: yes
+          register: hiddify_cli_latest_version
+
+        - debug:
+            msg: "hiddify_cli_latest_version: {{ hiddify_cli_latest_version }}"
+
+        - name: Set hiddify_cli_version_to_install when version is latest
+          set_fact:
+            hiddify_cli_version_to_install: "{{ (hiddify_cli_latest_version.content | from_json).name }}"
+      when: hiddify_cli_version == "latest"
+
+    - name: Use the specified Hiddify Cli version when version is not latest
+      set_fact:
+        hiddify_cli_version_to_install: "{{ hiddify_cli_version }}"
+      when: hiddify_cli_version != "latest"
+
+    - name: Set Hiddify Cli installation directory
+      set_fact:
+        hiddify_cli_dir: "{{ opt_dir }}/hiddify-core/{{ hiddify_cli_version_to_install }}"
+
+    - debug:
+        msg: "hiddify_cli_dir: {{ hiddify_cli_dir }}"
+
+    - name: Set HiddifyCli binary path
+      set_fact:
+        hiddify_cli_binary: "{{ hiddify_cli_dir }}/HiddifyCli"
+
+    - name: Check if HiddifyCli binary exists
+      stat:
+        path: "{{ hiddify_cli_binary }}"
+      register: hiddify_cli_binary_stat
+
+    - name: Set fact if HiddifyCli binary exists
+      set_fact:
+        hiddify_cli_binary_exists: "{{ hiddify_cli_binary_stat.stat.exists }}"
+
+    - debug:
+        msg: "hiddify_cli_binary_exists: {{ hiddify_cli_binary_exists }}"
+
+    - block:
+        - name: "Create directory for Hiddify Cli: {{ hiddify_cli_dir }}"
+          file:
+            path: "{{ hiddify_cli_dir }}"
+            state: directory
+            mode: "0755"
+
+        - name: Set Hiddify Cli archive filename
+          set_fact:
+            hiddify_cli_archive: "hiddify-cli-{{ ansible_system | lower }}-{{ base_arch[ansible_architecture] | default('amd64') }}{{ hiddify_cli_version_suffix }}.tar.gz"
+
+        - debug:
+            msg: "hiddify_cli_archive: {{ hiddify_cli_archive }}"
+
+        - name: "Download Hiddify Cli version: {{ hiddify_cli_version_to_install }}"
+          get_url:
+            url: "https://github.com/hiddify/hiddify-core/releases/download/{{ hiddify_cli_version_to_install }}/{{ hiddify_cli_archive }}"
+            dest: "{{ hiddify_cli_dir }}/"
+            mode: "0755"
+            force: "yes"
+
+        - name: "Extract Hiddify Cli version: {{ hiddify_cli_version_to_install }}"
+          unarchive:
+            src: "{{ hiddify_cli_dir }}/{{ hiddify_cli_archive }}"
+            dest: "{{ hiddify_cli_dir }}/"
+            mode: "0755"
+            remote_src: yes
+
+        - name: "Remove Hiddify Cli archive file"
+          file:
+            path: "{{ hiddify_cli_dir }}/{{ hiddify_cli_archive }}"
+            state: absent
+
+        - name: "Create symlink for HiddifyCli"
+          file:
+            src: "{{ hiddify_cli_binary }}"
+            dest: "{{ bin_dir }}/HiddifyCli"
+            state: link
+      when: not (hiddify_cli_binary_exists | default(false))
+
+    - name: "Check if hiddify.conf ({{ hiddify_cli_conf_file }}) exists"
+      stat:
+        path: "{{ hiddify_cli_conf_file }}"
+      register: hiddify_conf_stat
+
+    - name: "Copy hiddify.conf ({{ hiddify_cli_conf_file }}) if it doesn't exist"
+      copy:
+        src: root/hiddify.conf
+        dest: "{{ hiddify_cli_conf_file }}"
+        mode: "0644"
+      when: not (hiddify_conf_stat.stat.exists | default(false))
+
+    - name: Copy systemd service file
+      template:
+        src: etc/systemd/system/hiddify-cli.service.j2
+        dest: /etc/systemd/system/hiddify-cli.service
+        mode: "0644"
+
+    - name: Reload systemd daemon
+      systemd:
+        daemon_reload: yes
+  when: hiddify_cli_enabled
