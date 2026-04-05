@@ -24,7 +24,7 @@
     - block:
         - name: Setup Zabbix agent 'Hostname={{ hostname }}'
           lineinfile:
-            dest: /etc/zabbix/zabbix_agentd.conf.d/hostname.conf
+            dest: /etc/zabbix/zabbix_agent2.d/hostname.conf
             state: present
             create: yes
             regexp: '^Hostname='
@@ -33,7 +33,7 @@
 
         - name: Setup Zabbix agent 'Server={{ zabbix_server }}'
           lineinfile:
-            dest: /etc/zabbix/zabbix_agentd.conf.d/server.conf
+            dest: /etc/zabbix/zabbix_agent2.d/server.conf
             state: present
             create: yes
             regexp: '^Server='
@@ -42,7 +42,7 @@
 
         - name: Setup Zabbix agent 'ServerActive={{ zabbix_server }}'
           lineinfile:
-            dest: /etc/zabbix/zabbix_agentd.conf.d/server_active.conf
+            dest: /etc/zabbix/zabbix_agent2.d/server_active.conf
             state: present
             create: yes
             regexp: '^ServerActive='
