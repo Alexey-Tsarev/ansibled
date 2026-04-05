@@ -28,9 +28,17 @@ or limit "all" by a role/tag.
 For instance, apply the `common` role only and override `zabbix_server`:
 ```
 cd debian_13
-time ansible-playbook -i vagrant-vb, -e zabbix_server=10.1.1.1 --tags "common" -vv roles-common_deploy-tool_docker_scripts_zabbix-agent.yml
+time ansible-playbook -i vagrant-vb, -e zabbix_server=10.1.1.1 --tags common -vv roles-common_deploy-tool_docker_scripts_zabbix-agent.yml
 ```
 
+or:
+```
+lsb_release -d
+Description:    Ubuntu 22.04.5 LTS
+
+cd debian_13
+time ansible-playbook -u root -i 11.22.33.44, -e zabbix_repo_url=https://repo.zabbix.com/zabbix/7.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_latest_7.0+ubuntu22.04_all.deb -e hostname=test -e zabbix_server=10.1.1.1 --tags zabbix-agent -vv roles-common_deploy-tool_docker_scripts_zabbix-agent.yml
+```
 
 ---
 Good luck!  

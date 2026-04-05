@@ -14,7 +14,6 @@ locales_to_be_generated:
 locale_default: en_GB.UTF-8
 
 docker_iptables: 'false'
-zabbix_server: zabbix-server
 
 swap_file_size_mb: 1024 # 0 - disable
 swap_file_path: /swapfile

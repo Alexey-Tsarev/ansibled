@@ -5,16 +5,20 @@
         name:
           - xz-utils
 
-    - name: Install Zabbix repo
+    - name: Install Zabbix repo '{{ zabbix_repo_url }}'
       apt:
-        deb: https://repo.zabbix.com/zabbix/5.0/debian/pool/main/z/zabbix-release/zabbix-release_5.0-2+debian11_all.deb
+        deb: "{{ zabbix_repo_url }}"
         state: present
 
-    - name: Install zabbix-agent package
+    - name: Update packages cache
+      apt:
+        update_cache: yes
+
+    - name: Install zabbix-agent2 package
       package:
         state: latest
         name:
-          - zabbix-agent
+          - zabbix-agent2
 
 
     - block:
@@ -25,7 +29,7 @@
             create: yes
             regexp: '^Hostname='
             line: 'Hostname={{ hostname }}'
-          notify: Restart and enable zabbix-agent
+          notify: Restart and enable zabbix-agent2
 
         - name: Setup Zabbix agent 'Server={{ zabbix_server }}'
           lineinfile:
@@ -34,7 +38,7 @@
             create: yes
             regexp: '^Server='
             line: 'Server={{ zabbix_server }}'
-          notify: Restart and enable zabbix-agent
+          notify: Restart and enable zabbix-agent2
 
         - name: Setup Zabbix agent 'ServerActive={{ zabbix_server }}'
           lineinfile:
@@ -43,6 +47,6 @@
             create: yes
             regexp: '^ServerActive='
             line: 'ServerActive={{ zabbix_server }}'
-          notify: Restart and enable zabbix-agent
+          notify: Restart and enable zabbix-agent2
       when: hostname is defined and hostname != None
   when: zabbix_server is defined and zabbix_server != None and hostname is defined and hostname != None
